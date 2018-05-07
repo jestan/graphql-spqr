@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * @author Bojan Tomic (kaqqao)
  */
-public class ObjectScalarAdapter extends CachingMapper<GraphQLScalarType, GraphQLScalarType> implements OutputConverter<Object, Map<String, ?>> {
+public class ObjectScalarAdapter extends CachingMapper<GraphQLScalarType, GraphQLScalarType> implements OutputConverter<Object, Object> {
 
     private final ScalarDeserializationStrategy scalarStrategy;
 
@@ -39,8 +39,12 @@ public class ObjectScalarAdapter extends CachingMapper<GraphQLScalarType, GraphQ
     }
 
     @Override
-    public Map<String, ?> convertOutput(Object original, AnnotatedType type, ResolutionEnvironment resolutionEnvironment) {
-        return resolutionEnvironment.valueMapper.fromInput(original, type.getType(), MAP);
+    public Object convertOutput(Object original, AnnotatedType type, ResolutionEnvironment resolutionEnvironment) {
+        if (original == null || original instanceof String || original instanceof Number || original instanceof Boolean) {
+            return original;
+        } else {
+            return resolutionEnvironment.valueMapper.fromInput(original, type.getType(), MAP);
+        }
     }
 
     @Override
